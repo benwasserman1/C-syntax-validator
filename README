@@ -1,0 +1,34 @@
+Benjamin Wasserman
+2280906
+wasse114@mail.chapman.edu
+CPSC 350 Section 3
+Assignment #3: Delimiter Syntax Checker
+
+Source Files:
+
+1. main.cpp
+  NOTE: Didn't include another class because the assignment stated in
+  code organization that there should be just GenStack.h and main.cpp.
+
+Known runtime errors: NA
+
+Instructions for running:
+  1. The format of the text file leads to some differences. I ended up using
+TextEdit with the file saved with the plain text encoding Unicode (UTF-8). The
+way the delimiter is set to read the file, this won't work on a word document saved
+with a .txt extension (a third parameter would need to be added to getline() specifiying
+the delimiter '\r').
+  2. The argument should be the location of the file
+
+References:
+
+1. https://stackoverflow.com/questions/15362367/how-to-read-the-whole-lines-from-a-file-with-spaces
+  a. As a reference for reading in every line, while still tracking for the end of the file
+2. https://stackoverflow.com/questions/42228977/expected-unqualified-id-error-with-template-constructor
+  a. As a reference when I was trouble shooting when my stack implementation wasn't working initially (prior to when we went over it in class)
+3. https://stackoverflow.com/questions/3371262/resize-array-template
+  a. As a reference on the best way to resize the array
+4. http://www.sanfoundry.com/cpp-program-demonstrate-user-defined-exceptions/
+5. http://www.cplusplus.com/forum/general/41805/
+6. https://stackoverflow.com/questions/1055387/throw-keyword-in-functions-signature
+  a. 4-6 are references I used for exception classes

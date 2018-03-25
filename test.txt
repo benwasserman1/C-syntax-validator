@@ -1,0 +1,2031 @@
+/*
+Benjamin Wasserman
+2280906
+wasse114@mail.chapman.edu
+CPSC 380 Section 1
+03/07/2018
+Assignment #1: Sudoku Solution Validator
+
+Purpose of this source file:
+
+This source file is used to determine if a soduko solution is valid or not. If the solution
+is invalid, it alerts the user as to what rows and columns duplicates were found, and then
+specifies what up to two rows and columns need to be switched to in order to make the puzzle work.
+If there are more errors than this, it will only find two, but with some minor adjustments it could certainly
+find more. The source file consists of 12 functions (including main()). Six of these 12 functions are called
+with concurrent threads. Those threads are used to find the first 6 duplicate values. The file uses three additional
+functions to find the other duplicate values in each of these 6 original duplicates. There is also a function that is
+called to find the missing number, once we have pinpointed where the error is. Lastly, there is a function that reads in the
+text file that contains the solution.
+*/
+
+#include <iostream>
+#include <string>
+#include <pthread.h>
+#include <fstream>
+#include <stdio.h>
+#include <utility>
+
+using namespace std;
+
+int board[9][9]; //initialize the board
+
+int grid = -1;
+int vertical = -1;
+int horizontal = -1;
+
+//Define a struc for the row and column
+typedef struct _mystruct {
+  int r;
+  int c;
+} mystruct;
+
+/*
+The function readIn takes in the name of the file as a parameter, opens the file,
+and reads it into a two dimensional array. It doesn't return anything
+*/
+void readIn(string fileName)
+{
+  ifstream inFile(fileName);
+  if (inFile.fail())
+  {
+    cout << "There was an error processing the file. Try again" << endl;
+  }
+  else
+  {
+    for (int i = 0; i < 9; ++i)
+    {
+      for (int j = 0; j < 9; ++j)
+      {
+        int value;
+        char comma;
+        inFile >> value;
+        inFile >> comma;
+        board[i][j] = value;
+      }
+    }
+  }
+}
+
+/*
+The function checkMiniGridsLeft takes in a pointer of type void as a parameter
+and it returns a pointer of type void. This function iterates over all nine of the
+3 X 3 grids in the puzzle. It does this by breaking it up into the left three, the middle
+three and the right three. Once it finds a duplicate, that value is returned.
+*/
+void* checkMiniGridsLeft(void *status)
+{
+
+  int one = 0;
+  int two = 0;
+  int three = 0;
+  int four = 0;
+  int five = 0;
+  int six = 0;
+  int seven = 0;
+  int eight = 0;
+  int nine = 0;
+
+  mystruct *gridLeft = new mystruct();
+
+  bool error = false;
+  int i;
+  int j;
+  int k;
+
+  //1st three on left side
+  for (k = 0; k < 7; ++k)
+  {
+    if (k%3 == 0)
+    {
+      for (i = k; i < k+3; i++)
+      {
+        for (j = 0; j < 3; j++)
+        {
+          while (error == false)
+          {
+            if (board[i][j] != grid)
+            {
+              if (board[i][j] == 1)
+              {
+                one++;
+                if (one > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 2)
+              {
+                two++;
+                if (two > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 3)
+              {
+                three++;
+                if (three > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 4)
+              {
+                four++;
+                if (four > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 5)
+              {
+                five++;
+                if (five > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 6)
+              {
+                six++;
+                if (six > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 7)
+              {
+                seven++;
+                if (seven > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 8)
+              {
+                eight++;
+                if (eight > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 9)
+              {
+                nine++;
+                if (nine > 1)
+                {
+                  error = true;
+                }
+              }
+            }
+            break;
+          }
+          if (error == true)
+          {
+            break;
+          }
+        }
+        if (error == true)
+        {
+          break;
+        }
+      }
+      if (error == true)
+      {
+        break;
+      }
+    }
+    one = 0;
+    two = 0;
+    three = 0;
+    four = 0;
+    five = 0;
+    six = 0;
+    seven = 0;
+    eight = 0;
+    nine = 0;
+  }
+
+  if (error == true)
+  {
+    gridLeft->r = i + 1;
+    gridLeft->c = j + 1;
+    grid = board[i][j];
+    pthread_exit((void*)gridLeft);
+  }
+
+
+  mystruct *gridMiddle = new mystruct();
+
+  //Three grids in the middle
+  for (k = 0; k < 7; ++k)
+  {
+    if (k%3 == 0)
+    {
+      for (i = k; i < k+3; i++)
+      {
+        for (j = 3; j < 6; j++)
+        {
+          while (error == false)
+          {
+            if (board[i][j] != grid)
+            {
+              if (board[i][j] == 1)
+              {
+                one++;
+                if (one > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 2)
+              {
+                two++;
+                if (two > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 3)
+              {
+                three++;
+                if (three > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 4)
+              {
+                four++;
+                if (four > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 5)
+              {
+                five++;
+                if (five > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 6)
+              {
+                six++;
+                if (six > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 7)
+              {
+                seven++;
+                if (seven > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 8)
+              {
+                eight++;
+                if (eight > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 9)
+              {
+                nine++;
+                if (nine > 1)
+                {
+                  error = true;
+                }
+              }
+            }
+            break;
+          }
+          if (error == true)
+          {
+            break;
+          }
+        }
+        if (error == true)
+        {
+          break;
+        }
+      }
+      if (error == true)
+      {
+        break;
+      }
+    }
+    one = 0;
+    two = 0;
+    three = 0;
+    four = 0;
+    five = 0;
+    six = 0;
+    seven = 0;
+    eight = 0;
+    nine = 0;
+  }
+  if (error == true)
+  {
+    grid = board[i][j];
+    gridMiddle->r = i + 1;
+    gridMiddle->c = j + 1;
+    pthread_exit((void*)gridMiddle);
+  }
+
+  one = 0;
+  two = 0;
+  three = 0;
+  four = 0;
+  five = 0;
+  six = 0;
+  seven = 0;
+  eight = 0;
+  nine = 0;
+
+  mystruct *gridRight = new mystruct();
+
+  //Three grids on the right
+  for (k = 0; k < 7; ++k)
+  {
+    if (k%3 == 0)
+    {
+      for (i = k; i < k+3; i++)
+      {
+        for (j = 6; j < 9; j++)
+        {
+          while (error == false)
+          {
+            if (board[i][j] != grid)
+            {
+              if (board[i][j] == 1)
+              {
+                one++;
+                if (one > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 2)
+              {
+                two++;
+                if (two > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 3)
+              {
+                three++;
+                if (three > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 4)
+              {
+                four++;
+                if (four > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 5)
+              {
+                five++;
+                if (five > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 6)
+              {
+                six++;
+                if (six > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 7)
+              {
+                seven++;
+                if (seven > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 8)
+              {
+                eight++;
+                if (eight > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 9)
+              {
+                nine++;
+                if (nine > 1)
+                {
+                  error = true;
+                }
+              }
+            }
+            break;
+          }
+          if (error == true)
+          {
+            break;
+          }
+        }
+        if (error == true)
+        {
+          break;
+        }
+      }
+      if (error == true)
+      {
+        break;
+      }
+    }
+    one = 0;
+    two = 0;
+    three = 0;
+    four = 0;
+    five = 0;
+    six = 0;
+    seven = 0;
+    eight = 0;
+    nine = 0;
+  }
+  if (error == true)
+  {
+    grid = board[i][j];
+    gridRight->r = i + 1;
+    gridRight->c = j + 1;
+    pthread_exit((void*)gridRight);
+  }
+
+  //Return error values if need be
+  pthread_exit((void*)gridMiddle);
+}
+
+/*
+The function checkMiniGridsLeft takes in a pointer of type void as a parameter
+and it returns a pointer of type void. This function iterates over all nine of the
+3 X 3 grids in the puzzle in the reverse direction as the previous function does.
+It does this by breaking it up into the right three, the middle
+three and then the left three. Once it finds a duplicate, that value is returned.
+*/
+void* checkMiniGridsReverse(void *status7)
+{
+  bool error = false;
+  int i;
+  int j;
+  int k;
+
+  int one = 0;
+  int two = 0;
+  int three = 0;
+  int four = 0;
+  int five = 0;
+  int six = 0;
+  int seven = 0;
+  int eight = 0;
+  int nine = 0;
+
+  mystruct *gridRightReverse = new mystruct();
+
+  //Right three grids
+  for (k = 0; k < 7; ++k)
+  {
+    if (k%3 == 0)
+    {
+      for (i = k+2; i >= k; i--)
+      {
+        for (j = 8; j >= 6; j--)
+        {
+          while (error == false)
+          {
+            if (board[i][j] != grid)
+            {
+              if (board[i][j] == 1)
+              {
+                one++;
+                if (one > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 2)
+              {
+                two++;
+                if (two > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 3)
+              {
+                three++;
+                if (three > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 4)
+              {
+                four++;
+                if (four > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 5)
+              {
+                five++;
+                if (five > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 6)
+              {
+                six++;
+                if (six > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 7)
+              {
+                seven++;
+                if (seven > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 8)
+              {
+                eight++;
+                if (eight > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 9)
+              {
+                nine++;
+                if (nine > 1)
+                {
+                  error = true;
+                }
+              }
+            }
+            break;
+          }
+          if (error == true)
+          {
+            break;
+          }
+        }
+        if (error == true)
+        {
+          break;
+        }
+      }
+      if (error == true)
+      {
+        break;
+      }
+    }
+    one = 0;
+    two = 0;
+    three = 0;
+    four = 0;
+    five = 0;
+    six = 0;
+    seven = 0;
+    eight = 0;
+    nine = 0;
+  }
+
+  if (error == true)
+  {
+    grid = board[i][j];
+    gridRightReverse->r = i + 1;
+    gridRightReverse->c = j + 1;
+    pthread_exit((void*)gridRightReverse);
+  }
+
+  //Return all the counters to 0
+  one = 0;
+  two = 0;
+  three = 0;
+  four = 0;
+  five = 0;
+  six = 0;
+  seven = 0;
+  eight = 0;
+  nine = 0;
+
+  mystruct *gridMiddleReverse = new mystruct();
+
+  //Middle three grids
+  for (k = 0; k < 7; ++k)
+  {
+    if (k%3 == 0)
+    {
+      for (i = k+2; i >= k; i--)
+      {
+        for (j = 5; j >= 3; j--)
+        {
+          while (error == false)
+          {
+            if (board[i][j] != grid)
+            {
+              if (board[i][j] == 1)
+              {
+                one++;
+                if (one > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 2)
+              {
+                two++;
+                if (two > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 3)
+              {
+                three++;
+                if (three > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 4)
+              {
+                four++;
+                if (four > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 5)
+              {
+                five++;
+                if (five > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 6)
+              {
+                six++;
+                if (six > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 7)
+              {
+                seven++;
+                if (seven > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 8)
+              {
+                eight++;
+                if (eight > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 9)
+              {
+                nine++;
+                if (nine > 1)
+                {
+                  error = true;
+                }
+              }
+            }
+            break;
+          }
+          if (error == true)
+          {
+            break;
+          }
+        }
+        if (error == true)
+        {
+          break;
+        }
+      }
+      if (error == true)
+      {
+        break;
+      }
+    }
+    one = 0;
+    two = 0;
+    three = 0;
+    four = 0;
+    five = 0;
+    six = 0;
+    seven = 0;
+    eight = 0;
+    nine = 0;
+  }
+
+  if (error == true)
+  {
+    grid = board[i][j];
+    gridMiddleReverse->r = i + 1;
+    gridMiddleReverse->c = j + 1;
+    pthread_exit((void*)gridMiddleReverse);
+  }
+
+  // Return all the counters to 1
+  one = 0;
+  two = 0;
+  three = 0;
+  four = 0;
+  five = 0;
+  six = 0;
+  seven = 0;
+  eight = 0;
+  nine = 0;
+
+  mystruct *gridLeftReverse = new mystruct();
+
+  //Three grids on left side
+  for (k = 0; k < 7; ++k)
+  {
+    if (k%3 == 0)
+    {
+      for (i = k+2; i >= k; i--)
+      {
+        for (j = 2; j >= 0; j--)
+        {
+          while (error == false)
+          {
+            if (board[i][j] != grid)
+            {
+              if (board[i][j] == 1)
+              {
+                one++;
+                if (one > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 2)
+              {
+                two++;
+                if (two > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 3)
+              {
+                three++;
+                if (three > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 4)
+              {
+                four++;
+                if (four > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 5)
+              {
+                five++;
+                if (five > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 6)
+              {
+                six++;
+                if (six > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 7)
+              {
+                seven++;
+                if (seven > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 8)
+              {
+                eight++;
+                if (eight > 1)
+                {
+                  error = true;
+                }
+              }
+              else if (board[i][j] == 9)
+              {
+                nine++;
+                if (nine > 1)
+                {
+                  error = true;
+                }
+              }
+            }
+            break;
+          }
+          if (error == true)
+          {
+            break;
+          }
+        }
+        if (error == true)
+        {
+          break;
+        }
+      }
+      if (error == true)
+      {
+        break;
+      }
+    }
+    one = 0;
+    two = 0;
+    three = 0;
+    four = 0;
+    five = 0;
+    six = 0;
+    seven = 0;
+    eight = 0;
+    nine = 0;
+  }
+
+  if (error == true)
+  {
+    grid = board[i][j];
+    gridLeftReverse->r = i + 1;
+    gridLeftReverse->c = j + 1;
+    pthread_exit((void*)gridLeftReverse);
+  }
+  //Return the error values
+  pthread_exit((void*)gridMiddleReverse);
+}
+
+/*
+The function checkHorizontals takes in a pointer of type void as a parameter
+and it returns a pointer of type void. This function iterates over all nine of the
+rows on the board. It does this with a nested for loop, and 9 counters. If a counter
+becomes greater than 1, we break from the loop and return the row and column.
+*/
+void* checkHorizontals(void *status1)
+{
+  int one = 0;
+  int two = 0;
+  int three = 0;
+  int four = 0;
+  int five = 0;
+  int six = 0;
+  int seven = 0;
+  int eight = 0;
+  int nine = 0;
+
+  mystruct *horizontals = new mystruct();
+
+  bool error = false;
+  int i;
+  int j;
+  for (i = 0; i < 9; i++)
+  {
+    for (j = 0; j < 9; j++)
+    {
+      while (error == false)
+      {
+        if (board[i][j] != horizontal)
+        {
+          if (board[i][j] == 1)
+          {
+            one++;
+            if (one > 1)
+            {
+              error = true;
+            }
+          }
+          else if (board[i][j] == 2)
+          {
+            two++;
+            if (two > 1)
+            {
+              error = true;
+            }
+          }
+          else if (board[i][j] == 3)
+          {
+            three++;
+            if (three > 1)
+            {
+              error = true;
+            }
+          }
+          else if (board[i][j] == 4)
+          {
+            four++;
+            if (four > 1)
+            {
+              error = true;
+            }
+          }
+          else if (board[i][j] == 5)
+          {
+            five++;
+            if (five > 1)
+            {
+              error = true;
+            }
+          }
+          else if (board[i][j] == 6)
+          {
+            six++;
+            if (six > 1)
+            {
+              error = true;
+            }
+          }
+          else if (board[i][j] == 7)
+          {
+            seven++;
+            if (seven > 1)
+            {
+              error = true;
+            }
+          }
+          else if (board[i][j] == 8)
+          {
+            eight++;
+            if (eight > 1)
+            {
+              error = true;
+            }
+          }
+          else if (board[i][j] == 9)
+          {
+            nine++;
+            if (nine > 1)
+            {
+              error = true;
+            }
+          }
+        }
+        break;
+      }
+      if (error == true)
+      {
+        break;
+      }
+    }
+    if (error == true)
+    {
+      break;
+    }
+    one = 0;
+    two = 0;
+    three = 0;
+    four = 0;
+    five = 0;
+    six = 0;
+    seven = 0;
+    eight = 0;
+    nine = 0;
+  }
+  horizontal = board[i][j];
+  horizontals->r = i+1;
+  horizontals->c = j+1;
+  pthread_exit((void*)horizontals);
+}
+
+/*
+The function checkVerticals takes in a pointer of type void as a parameter
+and it returns a pointer of type void. This function iterates over all nine of the
+columns in the puzzle. It does this with a nested for loop, and 9 counters. If a counter
+becomes greater than 1, we break from the loop and return the row and column.
+*/
+void* checkVerticals(void *status2)
+{
+  int one = 0;
+  int two = 0;
+  int three = 0;
+  int four = 0;
+  int five = 0;
+  int six = 0;
+  int seven = 0;
+  int eight = 0;
+  int nine = 0;
+
+  mystruct *verticals = new mystruct();
+
+  bool error = false;
+  int i;
+  int j;
+
+  for (j = 0; j < 9; j++)
+  {
+    for (i = 0; i < 9; i++)
+    {
+      while (error == false)
+      {
+        if (board[i][j] != vertical)
+        {
+          if (board[i][j] == 1)
+          {
+            one++;
+            if (one > 1)
+            {
+              error = true;
+            }
+          }
+          else if (board[i][j] == 2)
+          {
+            two++;
+            if (two > 1)
+            {
+              error = true;
+            }
+          }
+          else if (board[i][j] == 3)
+          {
+            three++;
+            if (three > 1)
+            {
+              error = true;
+            }
+          }
+          else if (board[i][j] == 4)
+          {
+            four++;
+            if (four > 1)
+            {
+              error = true;
+            }
+          }
+          else if (board[i][j] == 5)
+          {
+            five++;
+            if (five > 1)
+            {
+              error = true;
+            }
+          }
+          else if (board[i][j] == 6)
+          {
+            six++;
+            if (six > 1)
+            {
+              error = true;
+            }
+          }
+          else if (board[i][j] == 7)
+          {
+            seven++;
+            if (seven > 1)
+            {
+              error = true;
+            }
+          }
+          else if (board[i][j] == 8)
+          {
+            eight++;
+            if (eight > 1)
+            {
+              error = true;
+            }
+          }
+          else if (board[i][j] == 9)
+          {
+            nine++;
+            if (nine > 1)
+            {
+              error = true;
+            }
+          }
+        }
+        break;
+      }
+      if (error == true)
+      {
+        break;
+      }
+    }
+    if (error == true)
+    {
+      break;
+    }
+    one = 0;
+    two = 0;
+    three = 0;
+    four = 0;
+    five = 0;
+    six = 0;
+    seven = 0;
+    eight = 0;
+    nine = 0;
+  }
+  vertical = board[i][j];
+  verticals->c = j+1;
+  verticals->r = i+1;
+  pthread_exit((void*)verticals);
+}
+
+
+/*
+The function checkHorizontalsReverse takes in a pointer of type void as a parameter
+and it returns a pointer of type void. This function iterates over all nine of the
+rows in the puzzle in the opposite direction that checkHorizontals did previously.
+It does this with a nested for loop, and 9 counters. If a counter
+becomes greater than 1, we break from the loop and return the row and column.
+*/
+void* checkHorizontalsReverse(void *status5)
+{
+  int one = 0;
+  int two = 0;
+  int three = 0;
+  int four = 0;
+  int five = 0;
+  int six = 0;
+  int seven = 0;
+  int eight = 0;
+  int nine = 0;
+
+  mystruct *horizontals_reverse = new mystruct();
+
+  bool error = false;
+  int i;
+  int j;
+  for (i = 8; i >= 0; i--)
+  {
+    for (j = 8; j >= 0; j--)
+    {
+      while (error == false)
+      {
+        if (board[i][j] != horizontal)
+        {
+          if (board[i][j] == 1)
+          {
+            one++;
+            if (one > 1)
+            {
+              error = true;
+            }
+          }
+          else if (board[i][j] == 2)
+          {
+            two++;
+            if (two > 1)
+            {
+              error = true;
+            }
+          }
+          else if (board[i][j] == 3)
+          {
+            three++;
+            if (three > 1)
+            {
+              error = true;
+            }
+          }
+          else if (board[i][j] == 4)
+          {
+            four++;
+            if (four > 1)
+            {
+              error = true;
+            }
+          }
+          else if (board[i][j] == 5)
+          {
+            five++;
+            if (five > 1)
+            {
+              error = true;
+            }
+          }
+          else if (board[i][j] == 6)
+          {
+            six++;
+            if (six > 1)
+            {
+              error = true;
+            }
+          }
+          else if (board[i][j] == 7)
+          {
+            seven++;
+            if (seven > 1)
+            {
+              error = true;
+            }
+          }
+          else if (board[i][j] == 8)
+          {
+            eight++;
+            if (eight > 1)
+            {
+              error = true;
+            }
+          }
+          else if (board[i][j] == 9)
+          {
+            nine++;
+            if (nine > 1)
+            {
+              error = true;
+            }
+          }
+        }
+        break;
+      }
+      if (error == true)
+      {
+        break;
+      }
+    }
+    if (error == true)
+    {
+      break;
+    }
+    one = 0;
+    two = 0;
+    three = 0;
+    four = 0;
+    five = 0;
+    six = 0;
+    seven = 0;
+    eight = 0;
+    nine = 0;
+  }
+  horizontal = board[i][j];
+  horizontals_reverse->r = i+1;
+  horizontals_reverse->c = j+1;
+  pthread_exit((void*)horizontals_reverse);
+}
+
+/*
+The function checkHorizontalsReverse takes in a pointer of type void as a parameter
+and it returns a pointer of type void. This function iterates over all nine of the
+columns in the puzzle in the opposite direction that checkVerticals did previously.
+It does this with a nested for loop, and 9 counters. If a counter
+becomes greater than 1, we break from the loop and return the row and column.
+*/
+void* checkVerticalsReverse(void *status6)
+{
+  int one = 0;
+  int two = 0;
+  int three = 0;
+  int four = 0;
+  int five = 0;
+  int six = 0;
+  int seven = 0;
+  int eight = 0;
+  int nine = 0;
+
+  mystruct *verticals_reverse = new mystruct();
+
+  bool error = false;
+  int i;
+  int j;
+  for (j = 8; j >= 0; --j)
+  {
+    for (i = 8; i >= 0; --i)
+    {
+      while (error == false)
+      {
+        if (board[i][j] != vertical)
+        {
+          if (board[i][j] == 1)
+          {
+            one++;
+            if (one > 1)
+            {
+              error = true;
+            }
+          }
+          else if (board[i][j] == 2)
+          {
+            two++;
+            if (two > 1)
+            {
+              error = true;
+            }
+          }
+          else if (board[i][j] == 3)
+          {
+            three++;
+            if (three > 1)
+            {
+              error = true;
+            }
+          }
+          else if (board[i][j] == 4)
+          {
+            four++;
+            if (four > 1)
+            {
+              error = true;
+            }
+          }
+          else if (board[i][j] == 5)
+          {
+            five++;
+            if (five > 1)
+            {
+              error = true;
+            }
+          }
+          else if (board[i][j] == 6)
+          {
+            six++;
+            if (six > 1)
+            {
+              error = true;
+            }
+          }
+          else if (board[i][j] == 7)
+          {
+            seven++;
+            if (seven > 1)
+            {
+              error = true;
+            }
+          }
+          else if (board[i][j] == 8)
+          {
+            eight++;
+            if (eight > 1)
+            {
+              error = true;
+            }
+          }
+          else if (board[i][j] == 9)
+          {
+            nine++;
+            if (nine > 1)
+            {
+              error = true;
+            }
+          }
+        }
+        break;
+      }
+      if (error == true)
+      {
+        break;
+      }
+    }
+    if (error == true)
+    {
+      break;
+    }
+    one = 0;
+    two = 0;
+    three = 0;
+    four = 0;
+    five = 0;
+    six = 0;
+    seven = 0;
+    eight = 0;
+    nine = 0;
+  }
+  vertical = board[i][j];
+  verticals_reverse->c = j+1;
+  verticals_reverse->r = i+1;
+  pthread_exit((void*)verticals_reverse);
+}
+
+/*
+The function findSecondVersionVert takes in three parameters as input: the row, the column
+and the value for the duplicate number. It returns a value of type pair that consists of
+two integers. The function searches for the second duplicate in the column where a duplicate
+was found. Once this is found, it is returned. If nothing is found, error values of -1 and -1
+are returned
+*/
+std::pair<int,int> findSecondVersionVert(int row, int column, int value)
+{
+  pair<int,int>secondDup;
+  secondDup = make_pair(-1, -1);
+  for (int i = 0; i < 9; ++i)
+  {
+    if (row-1 != i)
+    {
+      if (board[i][column-1] == value)
+      {
+        secondDup = make_pair(i+1, column);
+        if (secondDup.first > 0 && secondDup.first < 10 && secondDup.second > 0 && secondDup.second < 10)
+        {
+          printf("ROW:%d, ", secondDup.first);
+          printf("COL:%d     ", secondDup.second);
+        }
+        return secondDup;
+      }
+    }
+  }
+  return secondDup;
+}
+
+/*
+The function findSecondVersionHoriz takes in three parameters as input: the row, the column
+and the value for the duplicate number. It returns a value of type pair that consists of
+two integers. The function searches for the second duplicate in the row where a duplicate
+was found. Once this is found, it is returned. If nothing is found, error values of -1 and -1
+are returned
+*/
+std::pair<int,int> findSecondVersionHoriz(int row, int column, int value)
+{
+  pair<int,int>secondDup;
+  secondDup = make_pair(-1, -1);
+  for (int i = 0; i < 9; ++i)
+  {
+    if (column-1 != i)
+    {
+      if (board[row-1][i] == value)
+      {
+        secondDup = make_pair(row, i+1);
+        if (secondDup.first > 0 && secondDup.first < 10 && secondDup.second > 0 && secondDup.second < 10)
+        {
+          printf("ROW:%d, ", secondDup.first);
+          printf("COL:%d     ", secondDup.second);
+        }
+        return secondDup;
+      }
+    }
+  }
+  return secondDup;
+}
+
+/*
+The function findSecondVersionGrid takes in three parameters as input: the row, the column
+and the value for the duplicate number. It returns a value of type pair that consists of
+two integers. The function searches for the second duplicate in the grid where a duplicate
+was found. Once this is found, it is returned. If nothing is found, error values of -1 and -1
+are returned
+*/
+std::pair<int,int> findSecondVersionGrid(int row, int column, int value)
+{
+  pair<int,int>secondDup;
+  secondDup = make_pair(-1, -1);
+  if (row < 4 && column < 4)
+  {
+    for (int i = 0; i < 3; ++i)
+    {
+      for (int j = 0; j < 3; ++j)
+      {
+        if (row-1 != i || column-1 != j)
+        {
+          if (board[i][j] == value)
+          {
+            secondDup = make_pair(i+1, j+1);
+            if (secondDup.first > 0 && secondDup.first < 10 && secondDup.second > 0 && secondDup.second < 10)
+            {
+              printf("ROW:%d, ", secondDup.first);
+              printf("COL:%d     ", secondDup.second);
+            }
+            return secondDup;
+          }
+        }
+      }
+    }
+  }
+  else if (row > 3 && row < 7 && column < 4)
+  {
+    for (int i = 3; i < 6; ++i)
+    {
+      for (int j = 0; j < 3; ++j)
+      {
+        if (row-1 != i || column-1 != j)
+        {
+          if (board[i][j] == value)
+          {
+            secondDup = make_pair(i+1, j+1);
+            if (secondDup.first > 0 && secondDup.first < 10 && secondDup.second > 0 && secondDup.second < 10)
+            {
+              printf("ROW:%d, ", secondDup.first);
+              printf("COL:%d     ", secondDup.second);
+            }
+            return secondDup;
+          }
+        }
+      }
+    }
+  }
+  else if (row > 6 && row < 10 && column < 4)
+  {
+    for (int i = 6; i < 9; ++i)
+    {
+      for (int j = 0; j < 3; ++j)
+      {
+        if (row-1 != i || column-1 != j)
+        {
+          if (board[i][j] == value)
+          {
+            secondDup = make_pair(i+1, j+1);
+            if (secondDup.first > 0 && secondDup.first < 10 && secondDup.second > 0 && secondDup.second < 10)
+            {
+              printf("ROW:%d, ", secondDup.first);
+              printf("COL:%d     ", secondDup.second);
+            }
+            return secondDup;
+          }
+        }
+      }
+    }
+  }
+  else if (row < 4 && column > 3 && column < 7)
+  {
+    for (int i = 0; i < 3; ++i)
+    {
+      for (int j = 3; j < 6; ++j)
+      {
+        if (row-1 != i || column-1 != j)
+        {
+          if (board[i][j] == value)
+          {
+            secondDup = make_pair(i+1, j+1);
+            if (secondDup.first > 0 && secondDup.first < 10 && secondDup.second > 0 && secondDup.second < 10)
+            {
+              printf("ROW:%d, ", secondDup.first);
+              printf("COL:%d     ", secondDup.second);
+            }
+            return secondDup;
+          }
+        }
+      }
+    }
+  }
+  else if (row < 4 && column > 6 && column < 10)
+  {
+    for (int i = 0; i < 3; ++i)
+    {
+      for (int j = 6; j < 9; ++j)
+      {
+        if (row-1 != i || column-1 != j)
+        {
+          if (board[i][j] == value)
+          {
+            secondDup = make_pair(i+1, j+1);
+            if (secondDup.first > 0 && secondDup.first < 10 && secondDup.second > 0 && secondDup.second < 10)
+            {
+              printf("ROW:%d, ", secondDup.first);
+              printf("COL:%d     ", secondDup.second);
+            }
+            return secondDup;
+          }
+        }
+      }
+    }
+  }
+  else if (row > 3 && row < 7 && column > 3 && column < 7)
+  {
+    for (int i = 3; i < 6; ++i)
+    {
+      for (int j = 3; j < 6; ++j)
+      {
+        if (row-1 != i || column-1 != j)
+        {
+          if (board[i][j] == value)
+          {
+            secondDup = make_pair(i+1, j+1);
+            if (secondDup.first > 0 && secondDup.first < 10 && secondDup.second > 0 && secondDup.second < 10)
+            {
+              printf("ROW:%d, ", secondDup.first);
+              printf("COL:%d     ", secondDup.second);
+            }
+            return secondDup;
+          }
+        }
+      }
+    }
+  }
+  else if (row > 6 && row < 10 && column > 6 && column < 10)
+  {
+    for (int i = 6; i < 9; ++i)
+    {
+      for (int j = 6; j < 9; ++j)
+      {
+        if (row-1 != i || column-1 != j)
+        {
+          if (board[i][j] == value)
+          {
+            secondDup = make_pair(i+1, j+1);
+            if (secondDup.first > 0 && secondDup.first < 10 && secondDup.second > 0 && secondDup.second < 10)
+            {
+              printf("ROW:%d, ", secondDup.first);
+              printf("COL:%d     ", secondDup.second);
+            }
+            return secondDup;
+          }
+        }
+      }
+    }
+  }
+  else if (row > 6 && row < 10 && column > 3 && column < 7)
+  {
+    for (int i = 6; i < 9; ++i)
+    {
+      for (int j = 3; j < 6; ++j)
+      {
+        if (row-1 != i || column-1 != j)
+        {
+          if (board[i][j] == value)
+          {
+            secondDup = make_pair(i+1, j+1);
+            if (secondDup.first > 0 && secondDup.first < 10 && secondDup.second > 0 && secondDup.second < 10)
+            {
+              printf("ROW:%d, ", secondDup.first);
+              printf("COL:%d     ", secondDup.second);
+            }
+            return secondDup;
+          }
+        }
+      }
+    }
+  }
+  else if (row > 3 && row < 7 && column > 6 && column < 10)
+  {
+    for (int i = 3; i < 6; ++i)
+    {
+      for (int j = 6; j < 9; ++j)
+      {
+        if (row-1 != i || column-1 != j)
+        {
+          if (board[i][j] == value)
+          {
+            secondDup = make_pair(i+1, j+1);
+            if (secondDup.first > 0 && secondDup.first < 10 && secondDup.second > 0 && secondDup.second < 10)
+            {
+              printf("ROW:%d, ", secondDup.first);
+              printf("COL:%d     ", secondDup.second);
+            }
+            return secondDup;
+          }
+        }
+      }
+    }
+  }
+  return secondDup;
+}
+
+/*
+The function findMissingNumber returns an integer and it takes in two integers as parameters:
+row and col. It uses an integer array as a counter for each possible value. If a value is not found in both a row and column
+based on where the error was, then we know that the value must be switched to that integer. The integer that
+the row and column and need to be corrected to is returned. If no missing number is found, an error value
+of -1 is returned.
+*/
+int findMissingNumber(int row, int col){
+
+  int integer_array[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+  for (int i = 0; i < 9; ++i)
+  {
+    if (board[row][i] == 1)
+    {
+      integer_array[0] = 1;
+    }
+    else if (board[row][i] == 2)
+    {
+      integer_array[1] = 1;
+    }
+    else if (board[row][i] == 3)
+    {
+      integer_array[2] = 1;
+    }
+    else if (board[row][i] == 4)
+    {
+      integer_array[3] = 1;
+    }
+    else if (board[row][i] == 5)
+    {
+      integer_array[4] = 1;
+    }
+    else if (board[row][i] == 6)
+    {
+      integer_array[5] = 1;
+    }
+    else if (board[row][i] == 7)
+    {
+      integer_array[6] = 1;
+    }
+    else if (board[row][i] == 8)
+    {
+      integer_array[7] = 1;
+    }
+    else if (board[row][i] == 9)
+    {
+      integer_array[8] = 1;
+    }
+  }
+
+  for (int j = 0; j < 9; ++j)
+  {
+    if (board[j][col] == 1)
+    {
+      integer_array[0] += 1;
+    }
+    else if (board[j][col] == 2)
+    {
+      integer_array[1] += 1;
+    }
+    else if (board[j][col] == 3)
+    {
+      integer_array[2] += 1;
+    }
+    else if (board[j][col] == 4)
+    {
+      integer_array[3] += 1;
+    }
+    else if (board[j][col] == 5)
+    {
+      integer_array[4] += 1;
+    }
+    else if (board[j][col] == 6)
+    {
+      integer_array[5] += 1;
+    }
+    else if (board[j][col] == 7)
+    {
+      integer_array[6] += 1;
+    }
+    else if (board[j][col] == 8)
+    {
+      integer_array[7] += 1;
+    }
+    else if (board[j][col] == 9)
+    {
+      integer_array[8] += 1;
+    }
+  }
+
+  for (int j = 0; j < 9; ++j)
+  {
+    if (integer_array[j] == 0)
+    {
+      return j+1;
+    }
+  }
+  return -1;
+}
+
+/*
+This is the main function. It calls all the functions above, creates the POSIX threads, and joins
+those threads. It also provides the user with some feedback on how the validator is progressing. It outputs
+the row and column where each duplicate value is found and also tells the user where the errors are and what they
+should switch those values to. The most computationally intensive part in the main method, is that it takes
+the 12 duplicates values and determines which of these 12 has 3 matches, as those are the spots where the value
+needs to be changed.
+*/
+int main()
+{
+  cout << endl << "******** Welcome to the sudoku solution validator ***********" << endl << endl;
+
+  string testFile = "test4.txt";
+
+  //Read in a file for the board
+  readIn(testFile);
+
+  cout << "Name of test file: " << testFile << endl << endl;
+
+  //initialize the structs
+  mystruct gridLeft;
+  mystruct gridLeftReverse;
+  mystruct verticals;
+  mystruct horizontals;
+  mystruct horizontals_reverse;
+  mystruct verticals_reverse;
+
+  // Create the POSIX threads and call all the functions
+  pthread_t mini_grid_thread;
+  void *status = 0;
+  if(pthread_create(&mini_grid_thread, NULL, checkMiniGridsLeft, NULL)) {
+    fprintf(stderr, "Error creating thread\n");
+    return 1;
+  }
+
+  pthread_t horizontals_thread;
+  void *status1 = 0;
+  if (pthread_create(&horizontals_thread, NULL, checkHorizontals, NULL)){
+    fprintf(stderr, "Error creating thread\n");
+    return 1;
+  }
+
+  pthread_t verticals_thread;
+  void *status2 = 0;
+  if (pthread_create(&verticals_thread, NULL, checkVerticals, NULL)){
+    fprintf(stderr, "Error creating thread\n");
+    return 1;
+  }
+
+  pthread_t horiz_reverse;
+  void *status5 = 0;
+  if (pthread_create(&horiz_reverse, NULL, checkHorizontalsReverse, NULL)){
+    fprintf(stderr, "Error creating thread\n");
+    return 1;
+  }
+
+  pthread_t vert_reverse;
+  void *status6 = 0;
+  if (pthread_create(&vert_reverse, NULL, checkVerticalsReverse, NULL)){
+    fprintf(stderr, "Error creating thread\n");
+    return 1;
+  }
+
+  pthread_t mini_grid_reverse;
+  void *status7 = 0;
+  if(pthread_create(&mini_grid_reverse, NULL, checkMiniGridsReverse, NULL)) {
+    fprintf(stderr, "Error creating thread\n");
+    return 1;
+  }
+
+  //Join all the POSIX threads and store the result in the structs declared above
+  pthread_join(mini_grid_thread, &status);
+  gridLeft = *((mystruct *)status);
+
+  pthread_join(mini_grid_reverse, &status7);
+  gridLeftReverse = *((mystruct *)status7);
+
+  pthread_join(horizontals_thread, &status1);
+  horizontals = *((mystruct *)status1);
+
+  pthread_join(horiz_reverse, &status5);
+  horizontals_reverse = *((mystruct *)status5);
+
+  pthread_join(vert_reverse, &status6);
+  verticals_reverse = *((mystruct *)status6);
+
+  pthread_join(verticals_thread, &status2);
+  verticals = *((mystruct *)status2);
+
+  if (horizontals_reverse.r > 0 && horizontals_reverse.r < 10 && horizontals_reverse.c > 0 && horizontals_reverse.c < 10)
+  {
+    cout << "******** Duplicate values were found in the following spots **********" << endl;
+  }
+
+  //Print the locations of the duplicate values and find the second duplicate value for each one found
+  if (horizontals_reverse.r > 0 && horizontals_reverse.r < 10 && horizontals_reverse.c > 0 && horizontals_reverse.c < 10)
+  {
+    cout << endl;
+    printf("ROW:%d, ", horizontals_reverse.r);
+    printf("COL:%d     ", horizontals_reverse.c);
+  }
+
+  pair<int,int>horiz_rev;
+  int value = board[horizontals_reverse.r-1][horizontals_reverse.c-1];
+  horiz_rev = findSecondVersionHoriz(horizontals_reverse.r, horizontals_reverse.c, value);
+
+  if (verticals_reverse.r > 0 && verticals_reverse.r < 10 && verticals_reverse.c > 0 && verticals_reverse.c < 10)
+  {
+    printf("ROW:%d, ", verticals_reverse.r);
+    printf("COL:%d     ", verticals_reverse.c);
+  }
+
+  pair<int,int>vert_rev;
+  value = board[verticals_reverse.r-1][verticals_reverse.c-1];
+  vert_rev = findSecondVersionVert(verticals_reverse.r, verticals_reverse.c, value);
+
+  if (gridLeftReverse.r > 0 && gridLeftReverse.r < 10 && gridLeftReverse.c > 0 && gridLeftReverse.c < 10)
+  {
+    printf("ROW:%d, ", gridLeftReverse.r);
+    printf("COL:%d     ", gridLeftReverse.c);
+  }
+
+  pair<int,int>grid_rev;
+  value = board[gridLeftReverse.r-1][gridLeftReverse.c-1];
+  grid_rev = findSecondVersionGrid(gridLeftReverse.r, gridLeftReverse.c, value);
+
+  if (horizontals.r > 0 && horizontals.r < 10 && horizontals.c > 0 && horizontals.c < 10)
+  {
+    printf("ROW:%d, ", horizontals.r);
+    printf("COL:%d     ", horizontals.c);
+  }
+
+  pair<int,int>horiz;
+  value = board[horizontals.r-1][horizontals.c-1];
+  horiz = findSecondVersionHoriz(horizontals.r, horizontals.c, value);
+
+  if (verticals.r > 0 && verticals.r < 10 && verticals.c > 0 && verticals.c < 10)
+  {
+    printf("ROW:%d, ", verticals.r);
+    printf("COL:%d     ", verticals.c);
+  }
+
+  pair<int,int>vert;
+  value = board[verticals.r-1][verticals.c-1];
+  vert = findSecondVersionVert(verticals.r, verticals.c, value);
+
+  if (gridLeft.r > 0 && gridLeft.r < 10 && gridLeft.c > 0 && gridLeft.c < 10)
+  {
+    printf("ROW:%d, ", gridLeft.r);
+    printf("COL:%d     ", gridLeft.c);
+  }
+
+  pair<int,int>grid;
+  value = board[gridLeft.r-1][gridLeft.c-1];
+  grid = findSecondVersionGrid(gridLeft.r, gridLeft.c, value);
+
+  cout << endl;
+
+  //Create an array of integer pairs so that we can iterate to figure out which of the 12 locations has three hits
+  pair<int,int>coordinates[12] = {make_pair(verticals.r, verticals.c), make_pair(gridLeft.r, gridLeft.c), make_pair(horizontals.r, horizontals.c), make_pair(verticals_reverse.r, verticals_reverse.c), make_pair(horizontals_reverse.r, horizontals_reverse.c), make_pair(gridLeftReverse.r, gridLeftReverse.c), horiz_rev, vert_rev, horiz, vert, grid, grid_rev};
+
+  int match = -3; //initialize match to -3
+
+  //Initialize the final locations to -1, our error value
+  int proper_row = -1;
+  int proper_col = -1;
+  int proper_row1 = -1;
+  int proper_col1 = -1;
+
+  int i = 0;
+  int k = 0;
+
+  //Iterate over the array to determine which of the duplicate values has 3 hits. This can find up to two different
+  //locations with three hits.
+  while (k < 12)
+  {
+    for (i = 0; i < 12; ++i)
+    {
+      if (coordinates[i].first == coordinates[k].first && coordinates[i].second == coordinates[k].second)
+      {
+        if ((proper_row == coordinates[i].first && proper_col == coordinates[i].second) || (proper_row == coordinates[k].first && proper_col == coordinates[k].second))
+        {
+          break;
+        }
+        else if ((proper_row1 == coordinates[i].first && proper_col1 == coordinates[i].second) || (proper_row1 == coordinates[k].first && proper_col1 == coordinates[k].second))
+        {
+          break;
+        }
+        else {
+          match++;
+          if (match == 0)
+          {
+            //Found a match
+            if (proper_row > -1)
+            {
+              proper_row1 = coordinates[i].first;
+              proper_col1 = coordinates[i].second;
+              break;
+            }
+            else {
+              proper_row = coordinates[i].first;
+              proper_col = coordinates[i].second;
+              break;
+            }
+          }
+        }
+      }
+    }
+    k++;
+    match = -3;
+  }
+
+  //Find the missing number based on the row and column obtained above and print the results for the user
+
+  int missing_number = findMissingNumber(proper_row-1, proper_col-1);
+  cout << endl;
+  if ((proper_row != 0 || proper_col != 0) && missing_number > 0)
+  {
+    cout << "ERROR: Switch" << " row " << proper_row << ", column " << proper_col << " to " << missing_number << endl << endl;
+  }
+  else
+  {
+    //cout << "This puzzle has no errors. You're a sudoku master. " << endl << endl;
+  }
+
+  int missing_number1 = findMissingNumber(proper_row1-1, proper_col1-1);
+  if (proper_row1 > 0 && proper_col1 > 0 && missing_number1 > 0)
+  {
+      cout << "ERROR: Switch" << " row " << proper_row1 << ", column " << proper_col1 << " to " << missing_number1 << endl << endl;
+  }
+}
