@@ -1,9 +1,7 @@
 /*
 Benjamin Wasserman
-2280906
 wasse114@mail.chapman.edu
-CPSC 350 Section 3
-Assignment #3: Delimiter Syntax Checker
+Delimiter Syntax Checker
 
 Purpose of this source file:
 
